@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="py4j">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../venv/share/py4j" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/../venv/share/py4j" recursive="false" />
+  </library>
+</component>

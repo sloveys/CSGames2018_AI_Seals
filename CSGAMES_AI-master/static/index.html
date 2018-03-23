@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="/static/players_utils.js"></script>
+    <script src="/static/index.js"></script>
+
+    <link rel="stylesheet" href="/static/index.css">
+    <title>AI</title>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<div id="playerInfoContainer"></div>
+
+<div class="gameSliderContainer">
+  <input type="range" min="1" max="200" value="1" class="slider" id="gameSlider">
+</div>
+
+<button class="startButton">Start</button>
+<button id="playButton">&#9658;</button>
+<button id="stopButton">&#9612;&#9612;</button>
+
+</body>
+</html>

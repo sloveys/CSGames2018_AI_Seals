@@ -42,19 +42,25 @@ class MyBot(Bot):
         # Find a name for your bot
         return 'Seals Meals'
 
+    #def adjacentLoc(a_loc, b_loc):
+        #if []
+
     def turn(self, game_state, character_state, other_bots):
         super().turn(game_state, character_state, other_bots)
         char_location = self.character_state['location']
         char_base = self.character_state['base']
-        if (char_location == base):
+        if (char_location == char_base):
             if (self.character_state['carrying'] > 0):
-                self.commands.store()
+                return self.commands.store()
+            elif (self.character_state['health'] < 100):
+                return self.commands.rest()
+
 
         if (self.character_state['carrying'] == 0):
             goal = self.get_goal(game_state, 'J', char_location)
             if (goal == char_location):
                 return self.commands.collect()
-        elif (self.character_state['carrying'] < 100):
+        elif (self.character_state['carrying'] < 200):
             return self.commands.collect()
         else:
             goal = char_base

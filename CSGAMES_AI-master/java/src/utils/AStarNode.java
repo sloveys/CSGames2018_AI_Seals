@@ -32,7 +32,7 @@ public class AStarNode implements Comparable {
     }
 
     public float getCost() {
-        return costFromStart + estimatedCostToGoal;
+        return costFromStart + estimatedCostToGoal; // + swait if S
     }
 
     public int getX() {

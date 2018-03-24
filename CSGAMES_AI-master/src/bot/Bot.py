@@ -18,6 +18,7 @@ class Bot:
         self.commands = Commands(player_id)
 
     def get_name(self):
+        #return "Seals T"
         raise NotImplementedError
 
     def turn(self, game_state, character_state, other_bots):

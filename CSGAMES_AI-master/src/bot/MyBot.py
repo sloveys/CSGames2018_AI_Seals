@@ -10,6 +10,8 @@ class MyBot(Bot):
         self.state = 0;
 
     def get_goal(self, game_state, search, char_location):
+        if (game_state == None or search == None or char_location == None):
+            return None
         y = 0
         x = 0
         found = False
@@ -50,6 +52,8 @@ class MyBot(Bot):
         return 'Seals Meals'
 
     def adjacent_loc(self, a_loc, b_loc):
+        if (a_loc == None or b_loc == None):
+            return None
         if (a_loc[0] == b_loc[0]):
             if (a_loc[1] == b_loc[1]-1):
                 return 'E'
@@ -74,6 +78,9 @@ class MyBot(Bot):
         super().turn(game_state, character_state, other_bots)
         char_location = self.character_state['location']
         char_base = self.character_state['base']
+        char_carry = self.character_state['carrying']
+        if (char_location == None):
+            return self.commands.idle()
 
         if (char_location == char_base):
             self.state = 0
@@ -85,22 +92,22 @@ class MyBot(Bot):
         for bot in other_bots:
             bot_dir = self.adjacent_loc(char_location, bot['location'])
             if not (bot_dir == None or bot_dir == '0'):
-                if (self.character_state['carrying'] > 0):
+                if (char_carry > 0):
                     self.state = 1
                     break
                 if (self.adjacent_loc(bot['location'], bot['base']) == None):
                     return self.commands.attack(bot_dir)
 
-        if (self.character_state['carrying'] == 0):
+        if (char_carry == 0):
             goal = self.get_goal(game_state, 'J', char_location)
             if (goal == char_location):
                 return self.commands.collect()
-        elif (self.character_state['carrying'] < 300 and self.state == 0):
+        elif (char_carry < 300 and self.state == 0):
             return self.commands.collect()
         else:
             goal = char_base
 
-        if (goal == None):
+        if (goal == None or char_location == None):
             return self.commands.idle()
 
         direction = self.pathfinder.get_next_direction(char_location, goal)

@@ -2,7 +2,7 @@ from src.bot.Bot import Bot
 from src.symbols.ObjectSymbols import ObjectSymbols
 
 
-class MyBot(Bot):
+class SealsMealsBot(Bot):
     state = 0
 
     def __init__(self):
@@ -110,8 +110,11 @@ class MyBot(Bot):
         if (goal == None or char_location == None):
             return self.commands.idle()
 
-        direction = self.pathfinder.get_next_direction(char_location, goal)
-        if direction:
-            return self.commands.move(direction)
-        else:
+        try:
+            direction = self.pathfinder.get_next_direction(char_location, goal)
+        except:
             return self.commands.idle()
+        if direction == None:
+            return self.commands.idle()
+        else:
+            return self.commands.move(direction)

@@ -6,7 +6,7 @@ from src.symbols.CharacterSymbols import CharacterSymbols
 from src.symbols.ObjectSymbols import ObjectSymbols
 
 
-class Pathfinder:
+class PathfinderSMB:
 
     def __init__(self):
         self.start = None
@@ -60,14 +60,17 @@ class Pathfinder:
         for y in range(size_y - 1):
             for x in range(size_x - 1):
                 symbol = game_map[y][x]
+                w=1
+                if (game_map[y][x] == ObjectSymbols.SPIKE):
+                    w=2
                 if symbol.can_pass_through() or self._is_start_or_goal((y, x)):
                     right_symbol = game_map[y][x + 1]
                     if right_symbol.can_pass_through() or self._is_start_or_goal((y, x+1)):
-                        graph.add_edge((y, x), (y, x+1))
+                        graph.add_edge((y, x), (y, x+1), weight = w)
 
                     bottom_symbol = game_map[y + 1][x]
                     if bottom_symbol.can_pass_through() or self._is_start_or_goal((y+1, x)):
-                        graph.add_edge((y, x), (y+1, x))
+                        graph.add_edge((y, x), (y+1, x), weight = w)
 
         return graph
 

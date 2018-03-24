@@ -1,13 +1,18 @@
 from src.bot.Bot import Bot
 from src.symbols.ObjectSymbols import ObjectSymbols
-
+from src.bot.PathfinderSMB import PathfinderSMB
 
 class SealsMealsBot(Bot):
     state = 0
+    past_locs = None
+    attackState = False
 
     def __init__(self):
         super().__init__()
         self.state = 0;
+        self.past_locs = [None, None, None]
+        self.attackState = False
+        self.pathfinder = PathfinderSMB()
 
     def get_goal(self, game_state, search, char_location):
         if (game_state == None or search == None or char_location == None):
@@ -85,18 +90,50 @@ class SealsMealsBot(Bot):
         if (char_location == char_base):
             self.state = 0
             if (self.character_state['carrying'] > 0):
-                return self.commands.store()
+                data = self.commands.store()
+                if (data != None):
+                    return data
+                else:
+                    return self.commands.idle()
             elif (self.character_state['health'] < 100):
-                return self.commands.rest()
+                data = self.commands.rest()
+                if (data != None):
+                    return data
+                else:
+                    return self.commands.idle()
 
-        for bot in other_bots:
-            bot_dir = self.adjacent_loc(char_location, bot['location'])
-            if not (bot_dir == None or bot_dir == '0'):
-                if (char_carry > 0):
-                    self.state = 1
-                    break
-                if (self.adjacent_loc(bot['location'], bot['base']) == None):
-                    return self.commands.attack(bot_dir)
+        if (self.attackState):
+            self.attackState = False
+            if (char_carry > 0):
+                self.state = 1
+
+        if (self.state == 0):
+            for bot in other_bots:
+                if (bot['status'] != 'alive'):
+                    continue
+                bot_dir = self.adjacent_loc(char_location, bot['location'])
+                if not (bot_dir == None or bot_dir == '0'):
+                    if (char_carry > 0):
+                        self.state = 1
+                        break
+                    if (self.adjacent_loc(bot['location'], bot['base']) == None):
+                        try:
+                            self.attackState = True
+                            data = self.commands.attack(bot_dir)
+                            if (data != None):
+                                return data
+                        except:
+                            pass
+
+        deadlock = False
+        if (char_location == self.past_locs[1] and self.past_locs[0] == self.past_locs[2] and self.past_locs[0] != self.past_locs[1] and self.past_locs[0] != None and char_location != None):
+            deadlock = True
+        self.past_locs[2] = self.past_locs[1]
+        self.past_locs[1] = self.past_locs[0]
+        self.past_locs[0] = char_location
+        if (deadlock):
+            self.past_locs[0] = None
+            return self.commands.idle()
 
         if (char_carry == 0):
             goal = self.get_goal(game_state, 'J', char_location)
@@ -117,4 +154,8 @@ class SealsMealsBot(Bot):
         if direction == None:
             return self.commands.idle()
         else:
-            return self.commands.move(direction)
+            data = self.commands.move(direction)
+            if (data != None):
+                return data
+            else:
+                return self.commands.idle()

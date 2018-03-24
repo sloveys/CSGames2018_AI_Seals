@@ -3,6 +3,7 @@ from src.symbols.ObjectSymbols import ObjectSymbols
 
 
 class MyBot(Bot):
+    state = 0
 
     def __init__(self):
         super().__init__()
@@ -26,7 +27,9 @@ class MyBot(Bot):
         minLen = None
         minLoc = -1
         for i in range(len(allOfSearch)):
-            tempLen = ((allOfSearch[i][0] - char_location[0])**2 + (allOfSearch[i][1] - char_location[1])**2)**0.5
+            tempLen = self.get_distence(allOfSearch[i], char_location)
+            if (tempLen == None):
+                continue
             if (minLoc == -1):
                 minLoc = i
                 minLen = tempLen
@@ -37,30 +40,62 @@ class MyBot(Bot):
             return None
         return allOfSearch[minLoc]
 
+    def get_distence(self, a_loc, b_loc):
+        if (a_loc == None or b_loc == None):
+            return None
+        return ((a_loc[0] - b_loc[0])**2 + (a_loc[1] - b_loc[1])**2)**0.5
 
     def get_name(self):
         # Find a name for your bot
         return 'Seals Meals'
 
-    #def adjacentLoc(a_loc, b_loc):
-        #if []
+    def adjacent_loc(self, a_loc, b_loc):
+        if (a_loc[0] == b_loc[0]):
+            if (a_loc[1] == b_loc[1]-1):
+                return 'E'
+            elif (a_loc[1] == b_loc[1]+1):
+                return 'W'
+            elif (a_loc[1] == b_loc[1]):
+                return '0'
+            else:
+                return None
+        if (a_loc[1] == b_loc[1]):
+            if (a_loc[0] == b_loc[0]-1):
+                return 'S'
+            elif (a_loc[0] == b_loc[0]+1):
+                return 'N'
+            elif (a_loc[0] == b_loc[0]):
+                return '0'
+            else:
+                return None
+        return None
 
     def turn(self, game_state, character_state, other_bots):
         super().turn(game_state, character_state, other_bots)
         char_location = self.character_state['location']
         char_base = self.character_state['base']
+
         if (char_location == char_base):
+            self.state = 0
             if (self.character_state['carrying'] > 0):
                 return self.commands.store()
             elif (self.character_state['health'] < 100):
                 return self.commands.rest()
 
+        for bot in other_bots:
+            bot_dir = self.adjacent_loc(char_location, bot['location'])
+            if not (bot_dir == None or bot_dir == '0'):
+                if (self.character_state['carrying'] > 0):
+                    self.state = 1
+                    break
+                if (self.adjacent_loc(bot['location'], bot['base']) == None):
+                    return self.commands.attack(bot_dir)
 
         if (self.character_state['carrying'] == 0):
             goal = self.get_goal(game_state, 'J', char_location)
             if (goal == char_location):
                 return self.commands.collect()
-        elif (self.character_state['carrying'] < 200):
+        elif (self.character_state['carrying'] < 300 and self.state == 0):
             return self.commands.collect()
         else:
             goal = char_base
